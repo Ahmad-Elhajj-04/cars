@@ -1,30 +1,24 @@
 <?php
-include("../models/Car.php");
-include("../connection/connection.php");
-include("../services/ResponseService.php");
+require_once(__DIR__ . "/../services/CarService.php");
+require_once(__DIR__ . "/../services/ResponseService.php");
 
-function getCarByID(){
-    global $connection;
+function getCars() {
+    try {
+        if (isset($_GET["id"])) {
+            $id = (int) $_GET["id"];
+            echo CarService::findCarByID($id);
+            return;
+        }
 
-    if(isset($_GET["id"])){
-        $id = $_GET["id"];
-    }else{
-        echo ResponseService::response(500, "ID is missing");
+        echo CarService::getAllCars();
+        return;
+    } catch (Exception $e) {
+        echo ResponseService::response(500, ["error" => $e->getMessage()]);
         return;
     }
-
-    $car = Car::find($connection, $id);
-    echo ResponseService::response(200, $car->toArray());
-    return;
 }
 
-//getCarById();
+// run
 getCars();
-
-//ToDO: 
-//transform getCarByID to getCars()
-//if the id is set? then we retrieve the specific car 
-// if no ID, then we retrieve all the cars
-
-
 ?>
+
