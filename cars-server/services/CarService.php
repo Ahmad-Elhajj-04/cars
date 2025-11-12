@@ -1,25 +1,22 @@
 <?php
-require_once(__DIR__ . '/../models/Car.php');
-require_once(__DIR__ . '/../connection/connection.php');
-require_once(__DIR__ . '/ResponseService.php');
+require_once(__DIR__ . "/../models/Car.php");
+require_once(__DIR__ . "/../connection/connection.php");
+require_once(__DIR__ . "/ResponseService.php");
 
 class CarService {
-
-    public static function getAllCars() {
+    public static function getCars() {
         global $connection;
         try {
-            $cars = Car::all($connection);
+            $cars = Car::findAll($connection);
             $carsArray = array_map(fn($car) => $car->toArray(), $cars);
-
             return ResponseService::response(200, $carsArray);
         } catch (Exception $e) {
             return ResponseService::response(500, ['error' => $e->getMessage()]);
         }
     }
-
     public static function findCarByID($id) {
         global $connection;
-        $id = (int)$id; 
+        $id = (int)$id;
         try {
             $car = Car::find($connection, $id);
             if (!$car) {
@@ -40,13 +37,11 @@ class CarService {
 
             $newCar = new Car($data['name'], $data['color'], $data['year']);
             $newCar->save($connection);
-
             return ResponseService::response(201, ['message' => 'Car created successfully']);
         } catch (Exception $e) {
             return ResponseService::response(500, ['error' => $e->getMessage()]);
         }
     }
-
     public static function updateCar($id, $data) {
         global $connection;
         $id = (int)$id;
@@ -67,19 +62,4 @@ class CarService {
         }
     }
 
-    public static function deleteCar($id) {
-        global $connection;
-        $id = (int)$id;
-        try {
-            $car = Car::find($connection, $id);
-            if (!$car) {
-                return ResponseService::response(404, ['message' => 'Car not found']);
-            }
-            $car->delete($connection);
-            return ResponseService::response(200, ['message' => 'Car deleted successfully']);
-        } catch (Exception $e) {
-            return ResponseService::response(500, ['error' => $e->getMessage()]);
-        }
-    }
-}
-?>
+   
